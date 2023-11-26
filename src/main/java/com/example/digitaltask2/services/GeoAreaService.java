@@ -33,6 +33,7 @@ public class GeoAreaService {
 
 
         String nominatimBaseUrl = "https://nominatim.openstreetmap.org/";
+
         JsonNode JsonNode = restTemplate.getForObject(nominatimBaseUrl + "search.php?q=" + areaName +
                 "&polygon_geojson=1&format=jsonv2", com.fasterxml.jackson.databind.JsonNode.class);
         JsonNode placeNode = JsonNode.get(0);
@@ -40,8 +41,8 @@ public class GeoAreaService {
         long osmId = placeNode.get("osm_id").asLong();
         String addresstype = placeNode.get("addresstype").asText();
         String geojson = String.valueOf(placeNode.findValue("geojson"));
-        Double lat = placeNode.get("lat").asDouble();
-        Double lon = placeNode.get("lon").asDouble();
+        double lat = placeNode.get("lat").asDouble();
+        double lon = placeNode.get("lon").asDouble();
         GeoArea.Center center = new GeoArea.Center();
         center.setLatitude(lat);
         center.setLongitude(lon);
@@ -76,11 +77,12 @@ public class GeoAreaService {
             List<GeoArea.ChildGeoArea> childGeoAreas = new ArrayList<>();
 
             for (JsonNode element : elements) {
-                Long idNode = element.get("id").asLong();
+                long idNode = element.get("id").asLong();
                 String nameNode = element.get("tags").get("name").asText();
                 System.out.println(nameNode);
                 String subpartUrl = nominatimBaseUrl + "search.php?q=" + nameNode + "&polygon_geojson=1&format=jsonv2";
                 JsonNode nameNodeDet = restTemplate.getForObject(subpartUrl, JsonNode.class);
+
                 long nameNodeDet_OsmID = nameNodeDet.findValue("osm_id").asLong();
 
                 if (idNode == nameNodeDet_OsmID) {
@@ -105,8 +107,8 @@ public class GeoAreaService {
                     childGeoArea.setGeoJson(String.valueOf(TryPlaces.get("geometry")));
                     childGeoArea.setGeoAreaType(nameNodeDet.findValue("addresstype").asText());
 
-                    Double chiLat = nameNodeDet.findValue("lat").asDouble();
-                    Double chiLon = nameNodeDet.findValue("lon").asDouble();
+                    double chiLat = nameNodeDet.findValue("lat").asDouble();
+                    double chiLon = nameNodeDet.findValue("lon").asDouble();
 
                     GeoArea.Center chiCenter = new GeoArea.Center();
                     chiCenter.setLatitude(chiLat);
